@@ -11,9 +11,10 @@ class Connection:
         # set the host for the instance
         self.host = host
         # set the port based on the class variable port
-        self.port = Connection.port
         # add 1 to the class's connection_count
-        Connection.conn_count += 1
+        if (self.conn_count < Connection.conn_limit):
+            self.conn_count += 1
+            self.port = self.port + self.conn_count
 
     def close(self):
         # reduce the class's connection_count by 1
@@ -51,14 +52,15 @@ class Connection2:
     
     def __init__(self, host):
         self.host = host
-        self.port = Connection2.port
-        self.connections.append(self)
+        if len(self.connections) < self.conn_limit:
+            self.connections.append(self)
+            self.port = self.port + len(self.connections)
         
     def close(self):
         self.connections.remove(self)
         
     def __repr__(self):
-        return f"{self.host}, {self.port}"
+        return f"host: {self.host}, port: {self.port} connections: {len(self.connections)}"
 
 
 connection1 = Connection2("localhost")
@@ -68,6 +70,10 @@ connection3 = Connection2("hostdulocal")
 print(connection1.__dict__)
 print(connection2.__dict__)
 print(connection3.__dict__)
+print(f"repr(connection1): {repr(connection1)}")
+print(f"repr(connection2): {repr(connection2)}")
+print(f"repr(connection3): {repr(connection3)}")
+
 print(Connection2.__dict__)
 
 connection1.close()
